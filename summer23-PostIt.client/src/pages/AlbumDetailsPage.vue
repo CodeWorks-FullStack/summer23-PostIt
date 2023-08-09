@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="row">
       <!-- SECTION Album details -->
-      <div v-if="album" class="col-md-3">
+      <div v-if="album" class="col-md-3" id="v-step-2" >
         <div class="d-flex justify-content-between align-items-start">
           <img :src="album.coverImg" :alt="album.title" class="cover-img rounded light-shadow">
           <div class="rounded bg-warning p-1 light-shadow">
@@ -16,7 +16,7 @@
           <div>
             <!-- TODO disable or HIDE button if not album creator OR collaborator -->
             <button :disabled="album.archived == true" data-bs-toggle="modal" data-bs-target="#createPictureModal"
-              class="btn btn-info rounded text-white"><i class="mdi mdi-plus-outline"></i> add picture</button>
+              class="btn btn-info rounded text-white" id="v-step-3"><i class="mdi mdi-plus-outline"></i> add picture</button>
           </div>
         </div>
       </div>
@@ -26,13 +26,15 @@
           <!-- REVIEW these two lines were how we created a 'dummy' for-loop to test our styling -->
           <!-- <div class="col-3 p-2" v-for="n in 10"> -->
           <!-- <img class="album-picture" :src="pictures[0].imgUrl" alt=""> -->
-          <div class="col-3 p-2" v-for="p in pictures">
+          <div class="col-3 p-2" v-for="p in pictures" :key="p">
             <img class="album-picture" :src="p.imgUrl" alt="">
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <Tour :steps="steps" />
 </template>
 
 
@@ -46,6 +48,7 @@ import { AppState } from '../AppState.js';
 import { logger } from '../utils/Logger.js';
 
 export default {
+
   setup() {
     const route = useRoute()
 
@@ -79,7 +82,24 @@ export default {
 
     return {
       album: computed(() => AppState.activeAlbum),
-      pictures: computed(() => AppState.pictures)
+      pictures: computed(() => AppState.pictures),
+
+      steps: [
+        {
+          target: '#v-step-2',
+          header: {
+            title: 'Album Details'
+          },
+          content: `The Album Details provides information such as the creator and album coverImg`
+        },
+        {
+          target: '#v-step-3',
+          header: {
+            title: 'Post Picture'
+          },
+          content: `Add an picture to this album`
+        }
+      ]
     }
   }
 }
