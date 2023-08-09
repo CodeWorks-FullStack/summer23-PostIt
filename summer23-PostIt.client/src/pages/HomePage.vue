@@ -5,7 +5,9 @@
       <div class="col-3">
         <h1 class="text-light" id="v-step-0" >My Albums</h1>
       </div>
-      <div class="col-md-3"></div>
+      <div class="col-md-3" v-for="c in myCollabs" :key="c.id">
+        <AlbumCard :albumProp="c.album" />
+      </div>
     </div>
     <!-- <v-tour name="myTour" :steps="steps"></v-tour> -->
   </div>
@@ -13,6 +15,20 @@
   <div class="container">
     <div class="row">
       <div v-for="album in albums" :key="album.id" class="col-md-3" id="v-step-1">
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div class="bg-info d-flex justify-content-around p-2 rounded">
+          <button class="btn btn-outline-light" @click="filterBy = ''">All</button>
+          <button class="btn btn-outline-light" @click="filterBy = 'dogs'">Dogs</button>
+          <button class="btn btn-outline-light" @click="filterBy = 'animals'">Animals</button>
+          <button class="btn btn-outline-light" @click="filterBy = 'games'">Games</button>
+          <button class="btn btn-outline-light" @click="filterBy = 'gachamon'">Gachamon</button>
+          <button class="btn btn-outline-light" @click="filterBy = 'misc'">Misc.</button>
+        </div>
+      </div>
+    </div>
+    <div class="row pt-3">
+      <div v-for="album in albums" :key="album.id" class="col-md-3">
         <!-- <div class="bg-light">
           <img :src="album.coverImg" :alt="album.title" class="img-fluid">
           <h2>{{ album.title }}</h2>
@@ -26,7 +42,7 @@
 </template>
 
 <script>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Pop from '../utils/Pop.js';
 import { albumsService } from '../services/AlbumsService.js'
 import { AppState } from '../AppState.js';
@@ -35,7 +51,7 @@ import { AppState } from '../AppState.js';
 export default {
   // name: 'my-tour',
   setup() {
-
+    const filterBy = ref('')
     async function getAlbums() {
       try {
         await albumsService.getAlbums()
@@ -49,17 +65,15 @@ export default {
 
 
     return {
-      albums: computed(() => AppState.albums),
-
-      // steps: [
-      //   {
-      //     target: '#v-step-0',
-      //     header: {
-      //       title: 'Get Started'
-      //     },
-      //     content: `Discover <strong>Vue Tour</strong>!`
-      //   }
-      // ]
+      filterBy,
+      albums: computed(() => {
+        if (filterBy.value == "") {
+          return AppState.albums
+        } else {
+          return AppState.albums.filter(a => a.category == filterBy.value)
+        }
+      }),
+      myCollabs: computed(() => AppState.myCollabs)
     }
 },
   // mounted: function(){

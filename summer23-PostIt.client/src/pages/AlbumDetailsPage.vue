@@ -19,6 +19,18 @@
               class="btn btn-info rounded text-white" id="v-step-3"><i class="mdi mdi-plus-outline"></i> add picture</button>
           </div>
         </div>
+        <div class="d-flex pt-2">
+          <div class="rounded bg-info light-shadow p-2">
+            <h2>Collaborators: {{ album.memberCount }}</h2>
+          </div>
+          <button v-if="!isCollaborator" class="btn btn-secondary" @click="becomeCollaborator()">Collab <i
+              class="mdi mdi-heart"></i></button>
+          <button v-else class="btn btn-secondary" @click="removeCollaborator()">Uncollab <i
+              class="mdi mdi-heart-broken"></i></button>
+        </div>
+        <div class="d-flex pt-3">
+          <img class="collab-img mx-1" v-for="c in collaborators" :src="c.profile?.picture" alt="">
+        </div>
       </div>
       <!-- SECTION Album pictures -->
       <div class="col-md-9">
@@ -43,7 +55,8 @@ import { computed, onMounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import Pop from '../utils/Pop.js';
 import { albumsService } from '../services/AlbumsService.js';
-import { picturesService } from '../services/PicturesService.js'
+import { picturesService } from '../services/PicturesService.js';
+import { collaboratorsService } from '../services/CollaboratorsService.js'
 import { AppState } from '../AppState.js';
 import { logger } from '../utils/Logger.js';
 
@@ -71,6 +84,16 @@ export default {
       }
     }
 
+    async function getCollaboratorsByAlbumId() {
+      try {
+        const albumId = route.params.albumId
+        await collaboratorsService.getCollaboratorsByAlbumId(albumId)
+      } catch (error) {
+        logger.error(error)
+        Pop.toast(error.message, 'error')
+      }
+    }
+
     // onMounted(() => {
     //   getAlbumById()
     // })
@@ -78,6 +101,7 @@ export default {
     watchEffect(() => {
       getAlbumById(route.params.albumId)
       getPicturesByAlbumId()
+      getCollaboratorsByAlbumId()
     })
 
     return {
@@ -119,5 +143,23 @@ export default {
   object-position: center;
   border-radius: 5px;
   box-shadow: 2px 2px white;
+}
+
+.collab-img {
+  height: 10vh;
+  width: 10vh;
+  border-radius: 5px;
+  box-shadow: 2px 2px white;
+
+}
+
+.picture-btn {
+  width: 100%;
+  border-radius: 5px;
+  border: none;
+  padding: .5em;
+  color: white;
+  background-color: #CA51A8;
+  font-weight: bold;
 }
 </style>
