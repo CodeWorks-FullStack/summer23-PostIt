@@ -1,5 +1,5 @@
 !<template>
-  <v-tour name="myTour" :steps="steps"></v-tour>
+  <v-tour name="myTour" :steps="steps" :callbacks="tourCallBacks"></v-tour>
 </template>
 
 
@@ -7,26 +7,17 @@
 import { AppState } from '../AppState';
 import { computed, reactive, onMounted } from 'vue';
 import { logger } from '../utils/Logger.js';
+import { accountService } from '../services/AccountService.js';
 export default {
   name: 'my-tour',
+  props:{
+    steps: {type: Array, required: true},
+    tourCallBacks: {type: Object, required: true}
+  },
   setup(){
   return {  
-      steps: [
-        {
-          target: '#v-step-0',
-          header: {
-            title: 'Welcome to PostIt!'
-          },
-          content: `Discover <strong>Vue Tour PostIt</strong>!`
-        },
-        {
-          target: '#v-step-1',
-          header: {
-            title: 'Album Card'
-          },
-          content: `Click on an <strong>Album Card</strong> to open up its <strong>Album Details</strong> on a new page`
-        }
-      ]
+
+
   }
   },
     mounted: function(){

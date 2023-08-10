@@ -46,7 +46,7 @@
     </div>
   </div>
 
-  <Tour :steps="steps" />
+  <Tour v-if="account.needsTour" :steps="steps" :tourCallBacks="tourCallBacks"/>
 </template>
 
 
@@ -59,6 +59,7 @@ import { picturesService } from '../services/PicturesService.js';
 import { collaboratorsService } from '../services/CollaboratorsService.js'
 import { AppState } from '../AppState.js';
 import { logger } from '../utils/Logger.js';
+import { accountService } from '../services/AccountService.js';
 
 export default {
 
@@ -107,6 +108,9 @@ export default {
     return {
       album: computed(() => AppState.activeAlbum),
       pictures: computed(() => AppState.pictures),
+      collaborators: computed(() => AppState.albumCollabs),
+      isCollaborator: computed(() => AppState.albumCollabs.find(c => c.id == AppState.account.id)),
+      account: computed(()=> AppState.account),
 
       steps: [
         {
@@ -121,9 +125,14 @@ export default {
           header: {
             title: 'Post Picture'
           },
-          content: `Add an picture to this album`
+          content: `Add a picture to this album`
         }
-      ]
+      ],
+
+      tourCallBacks: {
+        onFinish: (() => accountService.editAccount({needsTour: false})),
+        onSkip: (() => accountService.editAccount({needsTour: false}))
+      },
     }
   }
 }
